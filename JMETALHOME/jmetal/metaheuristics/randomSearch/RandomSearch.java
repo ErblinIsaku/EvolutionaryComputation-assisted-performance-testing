@@ -36,11 +36,9 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.problems.LoadTesting;
-import jmetal.problems.WorkflowScheduling;
 import jmetal.util.JMException;
 import jmetal.util.NonDominatedSolutionList;
 import org.apache.jmeter.engine.StandardJMeterEngine;
-
 
 /**
  * This class implements a simple random search algorithm.
@@ -57,12 +55,14 @@ public class RandomSearch extends Algorithm {
   public String name;
   public int workload;
   public QLearning QL;
+
   /**
-  * Constructor
-  * @param problem Problem to solve
-  */
-  public RandomSearch(Problem problem){
-    super (problem) ;
+   * Constructor
+   * 
+   * @param problem Problem to solve
+   */
+  public RandomSearch(Problem problem) {
+    super(problem);
   } // RandomSearch
 
   /**
@@ -95,96 +95,6 @@ public class RandomSearch extends Algorithm {
       StandardJMeterEngine jmeter = new StandardJMeterEngine();
       LoadTesting LoadTester = new LoadTesting();
       LoadTester.Initialize();
-//        applyAction();
-//        try {
-//          executeTestPlan();
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
-
-
-//        System.out.println("Transaction: " + i + " Workload: " + WorkloadList.get(i));
-//      }
-
-//            Initialize();
-//
-//            System.out.println("Nameffgf: " + i + " Workload: " + WorkloadList.get(i));
-//
-//        }
-    }
-
-    // Fetching the tasks of the WorkFlow
-//
-//        List WorkflowList= new LinkedList();
-//        try{
-//        File file = new File("examples/Workflow.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        WorkflowList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        List OptimalWorkflowList= new LinkedList();
-//        for(int i=0; i<WorkflowList.size(); i++)
-//       {
-//           String level = (String)WorkflowList.get(i);
-//           String[] levelTasks= level.split(",");
-//
-//           List levelTasksList= new LinkedList();
-//            for(int j=0; j<levelTasks.length; j++)
-//           {
-//             levelTasksList.add(levelTasks[j]);
-//
-//           }
-//            OptimalWorkflowList.add(levelTasksList);
-//       }
-//
-//        List jobDependancyList= new LinkedList();
-//
-//        try{
-//        File file = new File("examples/JobDependancy.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        jobDependancyList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-
-    // Create the initial solutionSet
-//        OptorSimParameters _params;
-//       OptorSimMain optorSimMainInstance = new OptorSimMain();
-//       System.out.println("OptorSimMain> using default parameters file examples/parameters3.conf");
-//       OptorSimParameters.setFilename("examples/parameters3.conf");
-//       _params = OptorSimParameters.getInstance();
-//			// Initialise networkInfo
-//        GridConfFileReader gridconffilereader = GridConfFileReader.getInstance();
-//
-//        //initStorageElements();
-//        JobConfFileReader jread = JobConfFileReader.getInstance();
-//        Iterator iFiles = jread.assignFilesToSites();
-//
-//        ReplicaManager rm = ReplicaManager.getInstance();
-//
-//        while( iFiles.hasNext()) {
-//                DataFile file = (DataFile) iFiles.next();
-//                rm.registerEntry( file);
-//        }
 
     Solution newSolution;
     for (int i = 0; i < maxEvaluations; i++) {
@@ -197,4 +107,5 @@ public class RandomSearch extends Algorithm {
 
     return ndl;
   } // execute
-} // RandomSearch
+}
+// RandomSearch

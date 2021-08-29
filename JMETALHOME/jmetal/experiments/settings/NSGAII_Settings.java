@@ -70,8 +70,8 @@ public class NSGAII_Settings extends Settings {
 //    problem_ = new LoadTesting("RealSolutionType", problem_.getNumberOfVariables());
 
         // Default experiments.settings
-        populationSize_              = 2   ;
-        maxEvaluations_              = 2 ;
+        populationSize_              = 50  ;
+        maxEvaluations_              = 50;
         mutationProbability_         = 0.4 ;
         crossoverProbability_        = 0.9   ;
         mutationDistributionIndex_   = 20.0  ;

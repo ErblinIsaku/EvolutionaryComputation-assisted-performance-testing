@@ -44,159 +44,127 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import jmetal.problems.WorkflowScheduling;
 
-/** 
- * Class to configure and execute the NSGA-II algorithm.  
- *     
+/**
+ * Class to configure and execute the NSGA-II algorithm.
+ * 
  * Besides the classic NSGA-II, a steady-state version (ssNSGAII) is also
- * included (See: J.J. Durillo, A.J. Nebro, F. Luna and E. Alba 
- *                  "On the Effect of the Steady-State Selection Scheme in 
- *                  Multi-Objective Genetic Algorithms"
- *                  5th International Conference, EMO 2009, pp: 183-197. 
- *                  April 2009)
- */ 
+ * included (See: J.J. Durillo, A.J. Nebro, F. Luna and E. Alba "On the Effect
+ * of the Steady-State Selection Scheme in Multi-Objective Genetic Algorithms"
+ * 5th International Conference, EMO 2009, pp: 183-197. April 2009)
+ */
 
 public class NSGAII_main {
-  public static Logger      logger_ ;      // Logger object
-  public static FileHandler fileHandler_ ; // FileHandler object
+  public static Logger logger_; // Logger object
+  public static FileHandler fileHandler_; // FileHandler object
 
   /**
    * @param args Command line arguments.
-   * @throws JMException 
-   * @throws IOException 
-   * @throws SecurityException 
-   * Usage: three options
-   *      - jmetal.metaheuristics.nsgaII.NSGAII_main
-   *      - jmetal.metaheuristics.nsgaII.NSGAII_main problemName
-   *      - jmetal.metaheuristics.nsgaII.NSGAII_main problemName paretoFrontFile
+   * @throws JMException
+   * @throws IOException
+   * @throws SecurityException Usage: three options -
+   *                           jmetal.metaheuristics.nsgaII.NSGAII_main -
+   *                           jmetal.metaheuristics.nsgaII.NSGAII_main
+   *                           problemName -
+   *                           jmetal.metaheuristics.nsgaII.NSGAII_main
+   *                           problemName paretoFrontFile
    */
-  public static void main(String [] args) throws 
-                                  JMException, 
-                                  SecurityException, 
-                                  IOException, 
-                                  ClassNotFoundException {
-    Problem   problem   ; // The problem to solve
-    Algorithm algorithm ; // The algorithm to use
-    Operator  crossover ; // Crossover operator
-    Operator  mutation  ; // Mutation operator
-    Operator  selection ; // Selection operator
-    
-    HashMap  parameters ; // Operator parameters
-    
-    QualityIndicator indicators ; // Object to get quality indicators
+  public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
+    Problem problem; // The problem to solve
+    Algorithm algorithm; // The algorithm to use
+    Operator crossover; // Crossover operator
+    Operator mutation; // Mutation operator
+    Operator selection; // Selection operator
+
+    HashMap parameters; // Operator parameters
+
+    QualityIndicator indicators; // Object to get quality indicators
 
     // Logger object and file to store log messages
-    logger_      = Configuration.logger_ ;
-    fileHandler_ = new FileHandler("NSGAII_main.log"); 
-    logger_.addHandler(fileHandler_) ;
-        
-    indicators = null ;
+    logger_ = Configuration.logger_;
+    fileHandler_ = new FileHandler("NSGAII_main.log");
+    logger_.addHandler(fileHandler_);
+
+    indicators = null;
     if (args.length == 1) {
-      Object [] params = {"Real"};
-      problem = (new ProblemFactory()).getProblem(args[0],params);
+      Object[] params = { "Real" };
+      problem = (new ProblemFactory()).getProblem(args[0], params);
     } // if
     else if (args.length == 2) {
-      Object [] params = {"Real"};
-      problem = (new ProblemFactory()).getProblem(args[0],params);
-      indicators = new QualityIndicator(problem, args[1]) ;
+      Object[] params = { "Real" };
+      problem = (new ProblemFactory()).getProblem(args[0], params);
+      indicators = new QualityIndicator(problem, args[1]);
     } // if
     else { // Default problem
-      //problem = new Kursawe("Real", 3);
-      //problem = new Kursawe("BinaryReal", 3);
-      //problem = new Water("Real");
-      //problem = new ZDT3("ArrayReal", 30);
-      //problem = new ConstrEx("Real");
-      //problem = new DTLZ1("Real");
-      //problem = new OKA2("Real") ;
-//        List WorkflowList= new LinkedList();
-//        try{
-//        File file = new File("examples/Workflow.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        WorkflowList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        int numOfTasks=0;
-//
-//
-//        for(int i=0; i<WorkflowList.size(); i++)
-//       {
-//           String level = (String)WorkflowList.get(i);
-//           String[] levelTasks= level.split(",");
-//           numOfTasks = numOfTasks+levelTasks.length;
-//
-//       }
-//
-//        problem= new WorkflowScheduling("TripleIntArray",numOfTasks);
+      // problem = new Kursawe("Real", 3);
+      // problem = new Kursawe("BinaryReal", 3);
+      // problem = new Water("Real");
+      // problem = new ZDT3("ArrayReal", 30);
+      // problem = new ConstrEx("Real");
+      // problem = new DTLZ1("Real");
+      // problem = new OKA2("Real") ;
+
+      //
       problem = new LoadTesting("IntSolutionType", 2);
-//        problem = new LoadTesting("IntSolutionType", 30);
     } // else
-    
+
     algorithm = new NSGAII(problem);
-    //algorithm = new ssNSGAII(problem);
+    // algorithm = new ssNSGAII(problem);
 
     // Algorithm parameters
-    algorithm.setInputParameter("populationSize",50);
-    algorithm.setInputParameter("maxEvaluations",20);
+    algorithm.setInputParameter("populationSize", 50);
+    algorithm.setInputParameter("maxEvaluations", 20);
 
-    // Mutation and Crossover for Real codification 
-    parameters = new HashMap() ;
-    parameters.put("probability", 0.9) ;
-    parameters.put("distributionIndex", 20.0) ;
-//        crossover = CrossoverFactory.getCrossoverOperator("TwoPointsCrossover", parameters);
+    // Mutation and Crossover for Real codification
+    parameters = new HashMap();
+    parameters.put("probability", 0.9);
+    parameters.put("distributionIndex", 20.0);
+    // crossover = CrossoverFactory.getCrossoverOperator("TwoPointsCrossover",
+    // parameters);
     crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
 
-    parameters = new HashMap() ;
-    parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;
-    parameters.put("distributionIndex", 20.0) ;
-//        mutation = MutationFactory.getMutationOperator("SwapMutation", parameters);
+    parameters = new HashMap();
+    parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+    parameters.put("distributionIndex", 20.0);
+    // mutation = MutationFactory.getMutationOperator("SwapMutation", parameters);
     mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
-    // Selection Operator 
-    parameters = null ;
-    //        selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
-    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
+    // Selection Operator
+    parameters = null;
+    // selection = SelectionFactory.getSelectionOperator("BinaryTournament2",
+    // parameters) ;
+    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
 
     // Add the operators to the algorithm
-    algorithm.addOperator("crossover",crossover);
-    algorithm.addOperator("mutation",mutation);
-    algorithm.addOperator("selection",selection);
+    algorithm.addOperator("crossover", crossover);
+    algorithm.addOperator("mutation", mutation);
+    algorithm.addOperator("selection", selection);
 
     // Add the indicator object to the algorithm
-    algorithm.setInputParameter("indicators", indicators) ;
-    
+    algorithm.setInputParameter("indicators", indicators);
+
     // Execute the Algorithm
     long initTime = System.currentTimeMillis();
     SolutionSet population = algorithm.execute();
     long estimatedTime = System.currentTimeMillis() - initTime;
-    
-    // Result messages 
-    logger_.info("Total execution time: "+estimatedTime + "ms");
+
+    // Result messages
+    logger_.info("Total execution time: " + estimatedTime + "ms");
     logger_.info("Variables values have been writen to file VAR");
-    population.printVariablesToFile("VAR");    
+    population.printVariablesToFile("VAR");
     logger_.info("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");
-  
+
     if (indicators != null) {
-      logger_.info("Quality indicators") ;
-      logger_.info("Hypervolume: " + indicators.getHypervolume(population)) ;
-      logger_.info("GD         : " + indicators.getGD(population)) ;
-      logger_.info("IGD        : " + indicators.getIGD(population)) ;
-      logger_.info("Spread     : " + indicators.getSpread(population)) ;
-      logger_.info("Epsilon    : " + indicators.getEpsilon(population)) ;  
-     
-      int evaluations = ((Integer)algorithm.getOutputParameter("evaluations")).intValue();
-      logger_.info("Speed      : " + evaluations + " evaluations") ;      
+      logger_.info("Quality indicators");
+      logger_.info("Hypervolume: " + indicators.getHypervolume(population));
+      logger_.info("GD         : " + indicators.getGD(population));
+      logger_.info("IGD        : " + indicators.getIGD(population));
+      logger_.info("Spread     : " + indicators.getSpread(population));
+      logger_.info("Epsilon    : " + indicators.getEpsilon(population));
+
+      int evaluations = ((Integer) algorithm.getOutputParameter("evaluations")).intValue();
+      logger_.info("Speed      : " + evaluations + " evaluations");
     } // if
-  } //main
+  } // main
 } // NSGAII_main

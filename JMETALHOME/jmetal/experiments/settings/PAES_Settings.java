@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import jmetal.problems.WorkflowScheduling;
 import jmetal.qualityIndicator.QualityIndicator;
 
 /**
@@ -57,41 +56,6 @@ public class PAES_Settings extends Settings{
    */
   public PAES_Settings(String problem) {
     super(problem) ;
-
-//    Object [] problemParams = {"Real"};
-//    try {
-//      problem_ = (new ProblemFactory()).getProblem(problemName_, problemParams);
-//    } catch (JMException e) {
-//      e.printStackTrace();
-//    }
-
-//     List WorkflowList= new LinkedList();
-//        try{
-//        File file = new File("examples/Workflow.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        WorkflowList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        int numOfTasks=0;
-//
-//
-//        for(int i=0; i<WorkflowList.size(); i++)
-//       {
-//           String level = (String)WorkflowList.get(i);
-//           String[] levelTasks= level.split(",");
-//           numOfTasks = numOfTasks+levelTasks.length;
-//
-//       }
 
       problem_ = new LoadTesting("IntSolutionType", 2);
 

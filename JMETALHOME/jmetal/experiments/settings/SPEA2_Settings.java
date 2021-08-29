@@ -41,7 +41,6 @@ import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.LoadTesting;
 import jmetal.problems.ProblemFactory;
-import jmetal.problems.WorkflowScheduling;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.JMException;
 
@@ -75,7 +74,6 @@ public class SPEA2_Settings extends Settings {
 
       problem_ = new LoadTesting("IntSolutionType", 2);
 
-//        problem_= new WorkflowScheduling("TripleIntArray",numOfTasks);
 
     populationSize_           = 50   ;
     archiveSize_              = 50   ;

@@ -38,262 +38,148 @@ import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.comparators.DominanceComparator;
 
 import java.util.*;
-
-import jmetal.problems.WorkflowScheduling;
 import org.apache.jmeter.engine.StandardJMeterEngine;
-
 
 /**
  * This class represents an asynchronous version of MOCell algorithm, combining
- * aMOCell2 and aMOCell3. It is the aMOCell4 variant described in:
- *    A.J. Nebro, J.J. Durillo, F. Luna, B. Dorronsoro, E. Alba
- *   "Design Issues in a Multiobjective Cellular Genetic Algorithm."
- *   Evolutionary Multi-Criterion Optimization. 4th International Conference,
- *   EMO 2007. Sendai/Matsushima, Japan, March 2007.
+ * aMOCell2 and aMOCell3. It is the aMOCell4 variant described in: A.J. Nebro,
+ * J.J. Durillo, F. Luna, B. Dorronsoro, E. Alba "Design Issues in a
+ * Multiobjective Cellular Genetic Algorithm." Evolutionary Multi-Criterion
+ * Optimization. 4th International Conference, EMO 2007. Sendai/Matsushima,
+ * Japan, March 2007.
  */
-public class MOCell extends Algorithm{
-    public SUTstate curr_SUT_state;
-    private SUT SUT_env;
-    public LoadTesting.LoadTester loadTester;
-    public QualityMeasures qualityMeasures;
-    private int initialWorkLoadPerTransaction;
-    private double workLoadIncreasingStepRatio;
-    private double threadPerSecond;
-    public Transaction[] transactions;
-    public String name;
-    public int workload;
-    public QLearning QL;
+public class MOCell extends Algorithm {
+  public SUTstate curr_SUT_state;
+  private SUT SUT_env;
+  public LoadTesting.LoadTester loadTester;
+  public QualityMeasures qualityMeasures;
+  private int initialWorkLoadPerTransaction;
+  private double workLoadIncreasingStepRatio;
+  private double threadPerSecond;
+  public Transaction[] transactions;
+  public String name;
+  public int workload;
+  public QLearning QL;
 
-    public MOCell(Problem problem){
-        super (problem) ;
+  public MOCell(Problem problem) {
+    super(problem);
+  }
+
+  /**
+   * Execute the algorithm
+   * 
+   * @throws JMException
+   */
+  public SolutionSet execute() throws JMException, ClassNotFoundException {
+    // Init the parameters
+    int populationSize, archiveSize, maxEvaluations, evaluations;
+    Operator mutationOperator, crossoverOperator, selectionOperator;
+    SolutionSet currentPopulation;
+    CrowdingArchive archive;
+    SolutionSet[] neighbors;
+    Neighborhood neighborhood;
+    Comparator dominance = new DominanceComparator();
+    Comparator crowdingComparator = new CrowdingComparator();
+    Distance distance = new Distance();
+
+    // Read the parameters
+    populationSize = ((Integer) getInputParameter("populationSize")).intValue();
+    archiveSize = ((Integer) getInputParameter("archiveSize")).intValue();
+    maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
+
+    // Read the operators
+    mutationOperator = operators_.get("mutation");
+    crossoverOperator = operators_.get("crossover");
+    selectionOperator = operators_.get("selection");
+
+    // Initialize the variables
+    currentPopulation = new SolutionSet(populationSize);
+    archive = new CrowdingArchive(archiveSize, problem_.getNumberOfObjectives());
+    evaluations = 0;
+    neighborhood = new Neighborhood(populationSize);
+    neighbors = new SolutionSet[populationSize];
+
+    HashMap<String, Integer> WorkloadList = new HashMap<String, Integer>();
+
+    {
+      // WorkloadList.put(this.name, this.workload);
+      // for (String i : WorkloadList.keySet()) {
+      // Initialize();
+      SUT_env = new SUT();
+      // initializing first state
+      SUT_env.applyAction();
+      curr_SUT_state = SUT_env.getSUTState();
+      StandardJMeterEngine jmeter = new StandardJMeterEngine();
+      LoadTesting LoadTester = new LoadTesting();
+      LoadTester.Initialize();
+
     }
 
-
-
-    /** Execute the algorithm
-     * @throws JMException */
-    public SolutionSet execute() throws JMException, ClassNotFoundException {
-        //Init the parameters
-        int populationSize, archiveSize, maxEvaluations, evaluations;
-        Operator mutationOperator, crossoverOperator, selectionOperator;
-        SolutionSet currentPopulation;
-        CrowdingArchive archive;
-        SolutionSet [] neighbors;
-        Neighborhood neighborhood;
-        Comparator dominance = new DominanceComparator();
-        Comparator crowdingComparator = new CrowdingComparator();
-        Distance distance = new Distance();
-
-
-
-
-
-        // Read the parameters
-        populationSize    = ((Integer)getInputParameter("populationSize")).intValue();
-        archiveSize       = ((Integer)getInputParameter("archiveSize")).intValue();
-        maxEvaluations    = ((Integer)getInputParameter("maxEvaluations")).intValue();
-
-        // Read the operators
-        mutationOperator  = operators_.get("mutation");
-        crossoverOperator = operators_.get("crossover");
-        selectionOperator = operators_.get("selection");
-
-        // Initialize the variables
-        currentPopulation  = new SolutionSet(populationSize);
-        archive            = new CrowdingArchive(archiveSize,problem_.getNumberOfObjectives());
-        evaluations        = 0;
-        neighborhood       = new Neighborhood(populationSize);
-        neighbors          = new SolutionSet[populationSize];
-
-
-        // Fetching the tasks of the WorkFlow
-
-//        List WorkflowList= new LinkedList();
-//        try{
-//            File file = new File("examples/Workflow.txt");
-//            FileReader fileReader = new FileReader(file);
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                WorkflowList.add(line);
-//
-//            }
-//            fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        List OptimalWorkflowList= new LinkedList();
-//        for(int i=0; i<WorkflowList.size(); i++)
-//        {
-//            String level = (String)WorkflowList.get(i);
-//            String[] levelTasks= level.split(",");
-//
-//            List levelTasksList= new LinkedList();
-//            for(int j=0; j<levelTasks.length; j++)
-//            {
-//                levelTasksList.add(levelTasks[j]);
-//
-//            }
-//            OptimalWorkflowList.add(levelTasksList);
-//        }
-//
-//        List jobDependancyList= new LinkedList();
-//
-//        try{
-//            File file = new File("examples/JobDependancy.txt");
-//            FileReader fileReader = new FileReader(file);
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                jobDependancyList.add(line);
-//
-//            }
-//            fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-
-        // Create the initial population
-//    OptorSimParameters _params;
-//       OptorSimMain optorSimMainInstance = new OptorSimMain();
-//       System.out.println("OptorSimMain> using default parameters file examples/parameters3.conf");
-//       OptorSimParameters.setFilename("examples/parameters3.conf");
-//       _params = OptorSimParameters.getInstance();
-//			// Initialise networkInfo
-//        GridConfFileReader gridconffilereader = GridConfFileReader.getInstance();
-//
-//        //initStorageElements();
-//        JobConfFileReader jread = JobConfFileReader.getInstance();
-//        Iterator iFiles = jread.assignFilesToSites();
-//
-//        ReplicaManager rm = ReplicaManager.getInstance();
-//
-//        while( iFiles.hasNext()) {
-//                DataFile file = (DataFile) iFiles.next();
-//                rm.registerEntry( file);
-//        }
-
-//      Solution indivitual;
-//     int numOfPop=0;
-//     while (numOfPop  < populationSize) {
-//      indivitual = new Solution(problem_, OptimalWorkflowList);
-//     ((WorkflowScheduling)problem_).evaluateConstraints(indivitual, OptimalWorkflowList);
-//     if (indivitual.getNumberOfViolatedConstraint()==0)
-//     {   numOfPop++;
-//      ((WorkflowScheduling)problem_).evaluate(indivitual, OptimalWorkflowList, jobDependancyList);
-//      evaluations++;
-//      currentPopulation.add(indivitual);
-//     }
-//    }
-
-        HashMap<String, Integer> WorkloadList = new HashMap<String, Integer>();
-
-        {
-//      WorkloadList.put(this.name, this.workload);
-//      for (String i : WorkloadList.keySet()) {
-//        Initialize();
-            SUT_env = new SUT();
-            //initializing first state
-            SUT_env.applyAction();
-            curr_SUT_state = SUT_env.getSUTState();
-            StandardJMeterEngine jmeter = new StandardJMeterEngine();
-            LoadTesting LoadTester = new LoadTesting();
-            LoadTester.Initialize();
-//        applyAction();
-//        try {
-//          executeTestPlan();
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
-
-
-//        System.out.println("Transaction: " + i + " Workload: " + WorkloadList.get(i));
-//      }
-
-//            Initialize();
-//
-//            System.out.println("Nameffgf: " + i + " Workload: " + WorkloadList.get(i));
-//
-//        }
-        }
-
-      for (int i = 0; i < populationSize; i++){
+    for (int i = 0; i < populationSize; i++) {
       Solution individual = new Solution(problem_, WorkloadList);
-      ((LoadTesting)problem_).evaluate(individual, WorkloadList);
-//      ((WorkflowScheduling)problem_).evaluateConstraints(individual, OptimalWorkflowList);
+      ((LoadTesting) problem_).evaluate(individual, WorkloadList);
       currentPopulation.add(individual);
       individual.setLocation(i);
       evaluations++;
     }
 
-
-
     // Main loop
-    while (evaluations < maxEvaluations){
-      for (int ind = 0; ind < currentPopulation.size(); ind++){
+    while (evaluations < maxEvaluations) {
+      for (int ind = 0; ind < currentPopulation.size(); ind++) {
         Solution individual = new Solution(currentPopulation.get(ind));
 
-        Solution [] parents = new Solution[2];
-        Solution [] offSpring;
+        Solution[] parents = new Solution[2];
+        Solution[] offSpring;
 
-        //neighbors[ind] = neighborhood.getFourNeighbors(currentPopulation,ind);
-        neighbors[ind] = neighborhood.getEightNeighbors(currentPopulation,ind);
+        // neighbors[ind] = neighborhood.getFourNeighbors(currentPopulation,ind);
+        neighbors[ind] = neighborhood.getEightNeighbors(currentPopulation, ind);
         neighbors[ind].add(individual);
 
         // parents
-        parents[0] = (Solution)selectionOperator.execute(neighbors[ind]);
+        parents[0] = (Solution) selectionOperator.execute(neighbors[ind]);
         if (archive.size() > 0) {
-          parents[1] = (Solution)selectionOperator.execute(archive);
+          parents[1] = (Solution) selectionOperator.execute(archive);
         } else {
-          parents[1] = (Solution)selectionOperator.execute(neighbors[ind]);
+          parents[1] = (Solution) selectionOperator.execute(neighbors[ind]);
         }
 
         // Create a new individual, using genetic operators mutation and crossover
-        offSpring = (Solution [])crossoverOperator.execute(parents);
+        offSpring = (Solution[]) crossoverOperator.execute(parents);
         mutationOperator.execute(offSpring[0]);
 
         // Evaluate individual an his constraints
-        ((LoadTesting)problem_).evaluate(offSpring[0], WorkloadList);
-//        ((WorkflowScheduling)problem_).evaluateConstraints(offSpring[0], OptimalWorkflowList);
+        ((LoadTesting) problem_).evaluate(offSpring[0], WorkloadList);
         evaluations++;
 
-        int flag = dominance.compare(individual,offSpring[0]);
+        int flag = dominance.compare(individual, offSpring[0]);
 
-        if (flag == 1) { //The new individual dominates
+        if (flag == 1) { // The new individual dominates
           offSpring[0].setLocation(individual.getLocation());
-          currentPopulation.replace(offSpring[0].getLocation(),offSpring[0]);
+          currentPopulation.replace(offSpring[0].getLocation(), offSpring[0]);
           archive.add(new Solution(offSpring[0]));
-        } else if (flag == 0) { //The new individual is non-dominated
+        } else if (flag == 0) { // The new individual is non-dominated
           neighbors[ind].add(offSpring[0]);
           offSpring[0].setLocation(-1);
           Ranking rank = new Ranking(neighbors[ind]);
           for (int j = 0; j < rank.getNumberOfSubfronts(); j++) {
-            distance.crowdingDistanceAssignment(rank.getSubfront(j),
-                                                problem_.getNumberOfObjectives());
+            distance.crowdingDistanceAssignment(rank.getSubfront(j), problem_.getNumberOfObjectives());
           }
           Solution worst = neighbors[ind].worst(crowdingComparator);
 
-          if (worst.getLocation() == -1) { //The worst is the offspring
+          if (worst.getLocation() == -1) { // The worst is the offspring
             archive.add(new Solution(offSpring[0]));
           } else {
             offSpring[0].setLocation(worst.getLocation());
-            currentPopulation.replace(offSpring[0].getLocation(),offSpring[0]);
+            currentPopulation.replace(offSpring[0].getLocation(), offSpring[0]);
             archive.add(new Solution(offSpring[0]));
           }
         }
       }
     }
-    archive.printFeasibleFUN("FUN_MOCell") ;
-        Ranking ranking = new Ranking(currentPopulation);
-//        ranking.getSubfront(0).printFeasibleFUN("FUN_SPEA2") ;
+    archive.printFeasibleFUN("FUN_MOCell");
+    Ranking ranking = new Ranking(currentPopulation);
 
-        return ranking.getSubfront(0);
+    return ranking.getSubfront(0);
 
-    } // while
+  } // while
 } // MOCell
-

@@ -37,10 +37,7 @@ import jmetal.util.archive.AdaptiveGridArchive;
 import jmetal.util.comparators.DominanceComparator;
 
 import java.util.*;
-
-import jmetal.problems.WorkflowScheduling;
 import org.apache.jmeter.engine.StandardJMeterEngine;
-
 
 /**
  * This class implements the PAES algorithm.
@@ -56,26 +53,27 @@ public class PAES extends Algorithm {
     public Transaction[] transactions;
     public String name;
     public int workload;
+
     /**
      * Create a new PAES instance for resolve a problem
+     * 
      * @param problem Problem to solve
      */
     public PAES(Problem problem) {
-        super (problem) ;
+        super(problem);
     } // Paes
 
     /**
      * Tests two solutions to determine which one becomes be the guide of PAES
      * algorithm
-     * @param solution The actual guide of PAES
+     * 
+     * @param solution        The actual guide of PAES
      * @param mutatedSolution A candidate guide
      */
-    public Solution test(Solution solution,
-                         Solution mutatedSolution,
-                         AdaptiveGridArchive archive){
+    public Solution test(Solution solution, Solution mutatedSolution, AdaptiveGridArchive archive) {
 
         int originalLocation = archive.getGrid().location(solution);
-        int mutatedLocation  = archive.getGrid().location(mutatedSolution);
+        int mutatedLocation = archive.getGrid().location(mutatedSolution);
 
         if (originalLocation == -1) {
             return new Solution(mutatedSolution);
@@ -85,8 +83,8 @@ public class PAES extends Algorithm {
             return new Solution(solution);
         }
 
-        if (archive.getGrid().getLocationDensity(mutatedLocation) <
-                archive.getGrid().getLocationDensity(originalLocation)) {
+        if (archive.getGrid().getLocationDensity(mutatedLocation) < archive.getGrid()
+                .getLocationDensity(originalLocation)) {
             return new Solution(mutatedSolution);
         }
 
@@ -95,8 +93,9 @@ public class PAES extends Algorithm {
 
     /**
      * Runs of the Paes algorithm.
+     * 
      * @return a <code>SolutionSet</code> that is a set of non dominated solutions
-     * as a result of the algorithm execution
+     *         as a result of the algorithm execution
      * @throws JMException
      */
     public SolutionSet execute() throws JMException, ClassNotFoundException {
@@ -105,168 +104,75 @@ public class PAES extends Algorithm {
         Operator mutationOperator;
         Comparator dominance;
 
-        //Read the params
-        bisections     = ((Integer)this.getInputParameter("biSections")).intValue();
-        archiveSize    = ((Integer)this.getInputParameter("archiveSize")).intValue();
-        maxEvaluations = ((Integer)this.getInputParameter("maxEvaluations")).intValue();
+        // Read the params
+        bisections = ((Integer) this.getInputParameter("biSections")).intValue();
+        archiveSize = ((Integer) this.getInputParameter("archiveSize")).intValue();
+        maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
 
-        //Read the operators
+        // Read the operators
         mutationOperator = this.operators_.get("mutation");
 
-        //Initialize the variables
+        // Initialize the variables
         evaluations = 0;
-        archive     = new AdaptiveGridArchive(archiveSize,bisections,problem_.getNumberOfObjectives());
+        archive = new AdaptiveGridArchive(archiveSize, bisections, problem_.getNumberOfObjectives());
         dominance = new DominanceComparator();
-
-        // Fetching the tasks of the WorkFlow
-
-//        List WorkflowList= new LinkedList();
-//        try{
-//            File file = new File("examples/Workflow.txt");
-//            FileReader fileReader = new FileReader(file);
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                WorkflowList.add(line);
-//
-//            }
-//            fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        List OptimalWorkflowList= new LinkedList();
-//        for(int i=0; i<WorkflowList.size(); i++)
-//        {
-//            String level = (String)WorkflowList.get(i);
-//            String[] levelTasks= level.split(",");
-//
-//            List levelTasksList= new LinkedList();
-//            for(int j=0; j<levelTasks.length; j++)
-//            {
-//                levelTasksList.add(levelTasks[j]);
-//
-//            }
-//            OptimalWorkflowList.add(levelTasksList);
-//        }
-//
-//        List jobDependancyList= new LinkedList();
-//
-//        try{
-//            File file = new File("examples/JobDependancy.txt");
-//            FileReader fileReader = new FileReader(file);
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                jobDependancyList.add(line);
-//
-//            }
-//            fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-
-
-        //-> Create the initial solution and evaluate it and his constraints
-
-//         OptorSimParameters _params;
-//       OptorSimMain optorSimMainInstance = new OptorSimMain();
-//       System.out.println("OptorSimMain> using default parameters file examples/parameters3.conf");
-//       OptorSimParameters.setFilename("examples/parameters3.conf");
-//       _params = OptorSimParameters.getInstance();
-//			// Initialise networkInfo
-//        GridConfFileReader gridconffilereader = GridConfFileReader.getInstance();
-//
-//        //initStorageElements();
-//        JobConfFileReader jread = JobConfFileReader.getInstance();
-//        Iterator iFiles = jread.assignFilesToSites();
-//
-//        ReplicaManager rm = ReplicaManager.getInstance();
-//
-//        while( iFiles.hasNext()) {
-//                DataFile file = (DataFile) iFiles.next();
-//                rm.registerEntry( file);
-//        }
-
 
         HashMap<String, Integer> WorkloadList = new HashMap<String, Integer>();
 
         {
-//      WorkloadList.put(this.name, this.workload);
-//      for (String i : WorkloadList.keySet()) {
-//        Initialize();
+            // WorkloadList.put(this.name, this.workload);
+            // for (String i : WorkloadList.keySet()) {
+            // Initialize();
             SUT_env = new SUT();
-            //initializing first state
+            // initializing first state
             SUT_env.applyAction();
             curr_SUT_state = SUT_env.getSUTState();
             StandardJMeterEngine jmeter = new StandardJMeterEngine();
             LoadTesting LoadTester = new LoadTesting();
             LoadTester.Initialize();
-//        applyAction();
-//        try {
-//          executeTestPlan();
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
-
-
-//        System.out.println("Transaction: " + i + " Workload: " + WorkloadList.get(i));
-//      }
-
-//            Initialize();
-//
-//            System.out.println("Nameffgf: " + i + " Workload: " + WorkloadList.get(i));
-//
-//        }
         }
 
-
         Solution solution = new Solution(problem_);
-        ((LoadTesting)problem_).evaluate(solution, WorkloadList);
-//        ((LoadTesting)problem_).evaluateConstraints(solution);
+        ((LoadTesting) problem_).evaluate(solution, WorkloadList);
+        // ((LoadTesting)problem_).evaluateConstraints(solution);
         evaluations++;
 
         // Add it to the archive
         archive.add(new Solution(solution));
 
-        //Iterations....
+        // Iterations....
         do {
             // Create the mutate one
             Solution mutatedIndividual = new Solution(solution);
             mutationOperator.execute(mutatedIndividual);
 
-            ((LoadTesting)problem_).evaluate(mutatedIndividual, WorkloadList);
-//            ((LoadTesting)problem_).evaluateConstraints(mutatedIndividual, WorkloadList);
+            ((LoadTesting) problem_).evaluate(mutatedIndividual, WorkloadList);
+            // ((LoadTesting)problem_).evaluateConstraints(mutatedIndividual, WorkloadList);
             evaluations++;
-            //<-
+            // <-
 
             // Check dominance
-            int flag = dominance.compare(solution,mutatedIndividual);
+            int flag = dominance.compare(solution, mutatedIndividual);
 
-            if (flag == 1) { //If mutate solution dominate
+            if (flag == 1) { // If mutate solution dominate
                 solution = new Solution(mutatedIndividual);
                 archive.add(mutatedIndividual);
-            } else if (flag == 0) { //If none dominate the other
+            } else if (flag == 0) { // If none dominate the other
                 if (archive.add(mutatedIndividual)) {
-                    solution = test(solution,mutatedIndividual,archive);
+                    solution = test(solution, mutatedIndividual, archive);
                 }
             }
-      /*
-      if ((evaluations % 100) == 0) {
-        archive.printObjectivesToFile("FUN"+evaluations) ;
-        archive.printVariablesToFile("VAR"+evaluations) ;
-        archive.printObjectivesOfValidSolutionsToFile("FUNV"+evaluations) ;
-      }
-      */
+            /*
+             * if ((evaluations % 100) == 0) {
+             * archive.printObjectivesToFile("FUN"+evaluations) ;
+             * archive.printVariablesToFile("VAR"+evaluations) ;
+             * archive.printObjectivesOfValidSolutionsToFile("FUNV"+evaluations) ; }
+             */
         } while (evaluations < maxEvaluations);
 
-        //Return the  population of non-dominated solution
-        archive.printFeasibleFUN("FUN_PAES") ;
+        // Return the population of non-dominated solution
+        archive.printFeasibleFUN("FUN_PAES");
 
         return archive;
-    }  // execute
+    } // execute
 } // PAES

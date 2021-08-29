@@ -40,11 +40,10 @@ import jmetal.util.Ranking;
 import jmetal.util.Spea2Fitness;
 import org.apache.jmeter.engine.StandardJMeterEngine;
 
-
-/** 
+/**
  * This class representing the SPEA2 algorithm
  */
-public class SPEA2 extends Algorithm{
+public class SPEA2 extends Algorithm {
   public SUTstate curr_SUT_state;
   private SUT SUT_env;
   public LoadTesting.LoadTester loadTester;
@@ -56,210 +55,121 @@ public class SPEA2 extends Algorithm{
   public String name;
   public int workload;
   public QLearning QL;
-          
+
   /**
    * Defines the number of tournaments for creating the mating pool
    */
   public static final int TOURNAMENTS_ROUNDS = 1;
 
   /**
-  * Constructor.
-  * Create a new SPEA2 instance
-  * @param problem Problem to solve
-  */
-  public SPEA2(Problem problem) {                
-    super(problem) ;
+   * Constructor. Create a new SPEA2 instance
+   * 
+   * @param problem Problem to solve
+   */
+  public SPEA2(Problem problem) {
+    super(problem);
   } // Spea2
-   
-  /**   
-  * Runs of the Spea2 algorithm.
-  * @return a <code>SolutionSet</code> that is a set of non dominated solutions
-  * as a result of the algorithm execution  
-   * @throws JMException 
-  */  
-  public SolutionSet execute() throws JMException, ClassNotFoundException {   
+
+  /**
+   * Runs of the Spea2 algorithm.
+   * 
+   * @return a <code>SolutionSet</code> that is a set of non dominated solutions
+   *         as a result of the algorithm execution
+   * @throws JMException
+   */
+  public SolutionSet execute() throws JMException, ClassNotFoundException {
     int populationSize, archiveSize, maxEvaluations, evaluations;
     Operator crossoverOperator, mutationOperator, selectionOperator;
-    SolutionSet solutionSet, archive, offSpringSolutionSet;    
-    
-    //Read the params
-    populationSize = ((Integer)getInputParameter("populationSize")).intValue();
-    archiveSize    = ((Integer)getInputParameter("archiveSize")).intValue();
-    maxEvaluations = ((Integer)getInputParameter("maxEvaluations")).intValue();
-        
-    //Read the operators
-    crossoverOperator = operators_.get("crossover");
-    mutationOperator  = operators_.get("mutation");
-    selectionOperator = operators_.get("selection");        
-        
-    //Initialize the variables
-    solutionSet  = new SolutionSet(populationSize);
-    archive     = new SolutionSet(archiveSize);
-    evaluations = 0;
+    SolutionSet solutionSet, archive, offSpringSolutionSet;
 
+    // Read the params
+    populationSize = ((Integer) getInputParameter("populationSize")).intValue();
+    archiveSize = ((Integer) getInputParameter("archiveSize")).intValue();
+    maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
+
+    // Read the operators
+    crossoverOperator = operators_.get("crossover");
+    mutationOperator = operators_.get("mutation");
+    selectionOperator = operators_.get("selection");
+
+    // Initialize the variables
+    solutionSet = new SolutionSet(populationSize);
+    archive = new SolutionSet(archiveSize);
+    evaluations = 0;
 
     HashMap<String, Integer> WorkloadList = new HashMap<String, Integer>();
 
     {
-//      WorkloadList.put(this.name, this.workload);
-//      for (String i : WorkloadList.keySet()) {
-//        Initialize();
+      // WorkloadList.put(this.name, this.workload);
+      // for (String i : WorkloadList.keySet()) {
+      // Initialize();
       SUT_env = new SUT();
-      //initializing first state
+      // initializing first state
       SUT_env.applyAction();
       curr_SUT_state = SUT_env.getSUTState();
       StandardJMeterEngine jmeter = new StandardJMeterEngine();
       LoadTesting LoadTester = new LoadTesting();
       LoadTester.Initialize();
-//        applyAction();
-//        try {
-//          executeTestPlan();
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
 
-
-//        System.out.println("Transaction: " + i + " Workload: " + WorkloadList.get(i));
-//      }
-
-//            Initialize();
-//
-//            System.out.println("Nameffgf: " + i + " Workload: " + WorkloadList.get(i));
-//
-//        }
     }
 
-
-    // Fetching the tasks of the WorkFlow
-       
-//        List WorkflowList= new LinkedList();
-//        try{
-//        File file = new File("examples/Workflow.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        WorkflowList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        List OptimalWorkflowList= new LinkedList();
-//        for(int i=0; i<WorkflowList.size(); i++)
-//       {
-//           String level = (String)WorkflowList.get(i);
-//           String[] levelTasks= level.split(",");
-//
-//           List levelTasksList= new LinkedList();
-//            for(int j=0; j<levelTasks.length; j++)
-//           {
-//             levelTasksList.add(levelTasks[j]);
-//
-//           }
-//            OptimalWorkflowList.add(levelTasksList);
-//       }
-//
-//        List jobDependancyList= new LinkedList();
-//
-//        try{
-//        File file = new File("examples/JobDependancy.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        jobDependancyList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-    
-    //-> Create the initial solutionSet
-//        OptorSimParameters _params;
-//       OptorSimMain optorSimMainInstance = new OptorSimMain();
-//       System.out.println("OptorSimMain> using default parameters file examples/parameters3.conf");
-//       OptorSimParameters.setFilename("examples/parameters3.conf");
-//       _params = OptorSimParameters.getInstance();
-//			// Initialise networkInfo
-//        GridConfFileReader gridconffilereader = GridConfFileReader.getInstance();
-//
-//        //initStorageElements();
-//        JobConfFileReader jread = JobConfFileReader.getInstance();
-//        Iterator iFiles = jread.assignFilesToSites();
-//
-//        ReplicaManager rm = ReplicaManager.getInstance();
-//
-//        while( iFiles.hasNext()) {
-//                DataFile file = (DataFile) iFiles.next();
-//                rm.registerEntry( file);
-//        }
-//
     Solution newSolution;
-    int numOfPop=0;
-   while (numOfPop  < populationSize) {
-      newSolution = new Solution(problem_,WorkloadList);
+    int numOfPop = 0;
+    while (numOfPop < populationSize) {
+      newSolution = new Solution(problem_, WorkloadList);
 
-     if (newSolution.getNumberOfViolatedConstraint()==0)
-     {   numOfPop++;
-      ((LoadTesting)problem_).evaluate(newSolution, WorkloadList) ;
-      evaluations++;
-      solutionSet.add(newSolution);
-     }
-    }                        
-        
-    while (evaluations < maxEvaluations){               
+      if (newSolution.getNumberOfViolatedConstraint() == 0) {
+        numOfPop++;
+        ((LoadTesting) problem_).evaluate(newSolution, WorkloadList);
+        evaluations++;
+        solutionSet.add(newSolution);
+      }
+    }
+
+    while (evaluations < maxEvaluations) {
       SolutionSet union = solutionSet.union(archive);
-//      Spea2Fitness spea = new Spea2Fitness(union);
-//      spea.fitnessAssign();
-//      archive = spea.environmentalSelection(archiveSize);
+      // Spea2Fitness spea = new Spea2Fitness(union);
+      // spea.fitnessAssign();
+      // archive = spea.environmentalSelection(archiveSize);
       // Create a new offspringPopulation
-      offSpringSolutionSet= new SolutionSet(populationSize);
-      Solution  [] parents = new Solution[2];
-      while (offSpringSolutionSet.size() < populationSize){           
+      offSpringSolutionSet = new SolutionSet(populationSize);
+      Solution[] parents = new Solution[2];
+      while (offSpringSolutionSet.size() < populationSize) {
         int j = 0;
-        do{
-          j++;                
-          parents[0] = (Solution)selectionOperator.execute(archive);
-        } while (j < SPEA2.TOURNAMENTS_ROUNDS); // do-while                    
+        do {
+          j++;
+          parents[0] = (Solution) selectionOperator.execute(archive);
+        } while (j < SPEA2.TOURNAMENTS_ROUNDS); // do-while
         int k = 0;
-        do{
-          k++;                
-          parents[1] = (Solution)selectionOperator.execute(archive);
+        do {
+          k++;
+          parents[1] = (Solution) selectionOperator.execute(archive);
         } while (k < SPEA2.TOURNAMENTS_ROUNDS); // do-while
-            
-        //make the crossover 
-        Solution [] offSpring = (Solution [])crossoverOperator.execute(parents);            
-        mutationOperator.execute(offSpring[0]);            
-        ((LoadTesting)problem_).evaluate(offSpring[0], WorkloadList);
+
+        // make the crossover
+        Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
+        mutationOperator.execute(offSpring[0]);
+        ((LoadTesting) problem_).evaluate(offSpring[0], WorkloadList);
 
         offSpringSolutionSet.add(offSpring[0]);
         evaluations++;
       } // while
       // End Create a offSpring solutionSet
-      solutionSet = offSpringSolutionSet;                   
+      solutionSet = offSpringSolutionSet;
     } // while
 
-//    Ranking ranking = new Ranking(archive);
-//    ranking.getSubfront(0).printFeasibleFUN("FUN_SPEA2") ;
+    // Ranking ranking = new Ranking(archive);
+    // ranking.getSubfront(0).printFeasibleFUN("FUN_SPEA2") ;
 
-//    return ranking.getSubfront(0);
+    // return ranking.getSubfront(0);
 
-//    Ranking ranking = new Ranking(archive);
-//    return ranking.getSubfront(0);
+    // Ranking ranking = new Ranking(archive);
+    // return ranking.getSubfront(0);
 
     Ranking ranking = new Ranking(solutionSet);
-    ranking.getSubfront(0).printFeasibleFUN("FUN_SPEA2") ;
+    ranking.getSubfront(0).printFeasibleFUN("FUN_SPEA2");
 
     return ranking.getSubfront(0);
-
 
   } // execute
 } // SPEA2

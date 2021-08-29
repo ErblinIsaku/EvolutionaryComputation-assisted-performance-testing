@@ -40,116 +40,85 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import jmetal.problems.WorkflowScheduling;
 
 /**
  * Class for configuring and running the RandomSearch algorithm
  */
 public class RandomSearch_main {
-  public static Logger      logger_ ;      // Logger object
-  public static FileHandler fileHandler_ ; // FileHandler object
+  public static Logger logger_; // Logger object
+  public static FileHandler fileHandler_; // FileHandler object
 
   /**
    * @param args Command line arguments.
    * @throws JMException
    * @throws IOException
-   * @throws SecurityException
-   * Usage: three options
-   *      - jmetal.metaheuristics.randomSearch.RandomSearch_main
-   *      - jmetal.metaheuristics.randomSearch.RandomSearch_main problemName
+   * @throws SecurityException Usage: three options -
+   *                           jmetal.metaheuristics.randomSearch.RandomSearch_main
+   *                           -
+   *                           jmetal.metaheuristics.randomSearch.RandomSearch_main
+   *                           problemName
    */
-  public static void main(String [] args) throws
-                                  JMException, SecurityException, IOException, ClassNotFoundException {
-    Problem   problem   ;         // The problem to solve
-    Algorithm algorithm ;         // The algorithm to use
-    Operator  crossover ;         // Crossover operator
-    Operator  mutation  ;         // Mutation operator
-    Operator  selection ;         // Selection operator
+  public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
+    Problem problem; // The problem to solve
+    Algorithm algorithm; // The algorithm to use
+    Operator crossover; // Crossover operator
+    Operator mutation; // Mutation operator
+    Operator selection; // Selection operator
 
-    QualityIndicator indicators ; // Object to get quality indicators
+    QualityIndicator indicators; // Object to get quality indicators
 
     // Logger object and file to store log messages
-    logger_      = Configuration.logger_ ;
-    fileHandler_ = new FileHandler("RandomSearch_main.log"); 
-    logger_.addHandler(fileHandler_) ;
+    logger_ = Configuration.logger_;
+    fileHandler_ = new FileHandler("RandomSearch_main.log");
+    logger_.addHandler(fileHandler_);
 
-    indicators = null ;
+    indicators = null;
     if (args.length == 1) {
-      Object [] params = {"Real"};
-      problem = (new ProblemFactory()).getProblem(args[0],params);
+      Object[] params = { "Real" };
+      problem = (new ProblemFactory()).getProblem(args[0], params);
     } // if
     else if (args.length == 2) {
-      Object [] params = {"Real"};
-      problem = (new ProblemFactory()).getProblem(args[0],params);
-      indicators = new QualityIndicator(problem, args[1]) ;
+      Object[] params = { "Real" };
+      problem = (new ProblemFactory()).getProblem(args[0], params);
+      indicators = new QualityIndicator(problem, args[1]);
     } // if
     else { // Default problem
-        
-//        List WorkflowList= new LinkedList();
-//        try{
-//        File file = new File("examples/Workflow.txt");
-//	FileReader fileReader = new FileReader(file);
-//	BufferedReader bufferedReader = new BufferedReader(fileReader);
-//
-//	String line;
-//        while ((line = bufferedReader.readLine()) != null) {
-//        WorkflowList.add(line);
-//
-//			}
-//	fileReader.close();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//        int numOfTasks=0;
-//
-//
-//        for(int i=0; i<WorkflowList.size(); i++)
-//       {
-//           String level = (String)WorkflowList.get(i);
-//           String[] levelTasks= level.split(",");
-//           numOfTasks = numOfTasks+levelTasks.length;
-//
-//       }
 
-        problem = new LoadTesting("IntSolutionType", 2);
-        
-        
-        
-      //problem = new Kursawe("Real", 3); 
-      //problem = new Water("Real");
-      //problem = new ZDT1("ArrayReal", 1000);
-      //problem = new ZDT4("BinaryReal");
-      //problem = new WFG1("Real");
-      //problem = new DTLZ1("Real");
-      //problem = new OKA2("Real") ;
+      problem = new LoadTesting("IntSolutionType", 2);
+
+      // problem = new Kursawe("Real", 3);
+      // problem = new Water("Real");
+      // problem = new ZDT1("ArrayReal", 1000);
+      // problem = new ZDT4("BinaryReal");
+      // problem = new WFG1("Real");
+      // problem = new DTLZ1("Real");
+      // problem = new OKA2("Real") ;
     } // else
 
     algorithm = new RandomSearch(problem);
 
     // Algorithm parameters
-    algorithm.setInputParameter("maxEvaluations",100);
+    algorithm.setInputParameter("maxEvaluations", 100);
 
     // Execute the Algorithm
     long initTime = System.currentTimeMillis();
     SolutionSet population = algorithm.execute();
     long estimatedTime = System.currentTimeMillis() - initTime;
 
-    // Result messages 
-    logger_.info("Total execution time: "+estimatedTime + "ms");
+    // Result messages
+    logger_.info("Total execution time: " + estimatedTime + "ms");
     logger_.info("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");
     logger_.info("Variables values have been writen to file VAR");
-    population.printVariablesToFile("VAR");      
-    
+    population.printVariablesToFile("VAR");
+
     if (indicators != null) {
-      logger_.info("Quality indicators") ;
-      logger_.info("Hypervolume: " + indicators.getHypervolume(population)) ;
-      logger_.info("GD         : " + indicators.getGD(population)) ;
-      logger_.info("IGD        : " + indicators.getIGD(population)) ;
-      logger_.info("Spread     : " + indicators.getSpread(population)) ;
-      logger_.info("Epsilon    : " + indicators.getEpsilon(population)) ;
-    } // if                   
-  } //main
+      logger_.info("Quality indicators");
+      logger_.info("Hypervolume: " + indicators.getHypervolume(population));
+      logger_.info("GD         : " + indicators.getGD(population));
+      logger_.info("IGD        : " + indicators.getIGD(population));
+      logger_.info("Spread     : " + indicators.getSpread(population));
+      logger_.info("Epsilon    : " + indicators.getEpsilon(population));
+    } // if
+  } // main
 } // Randomsearch_main
