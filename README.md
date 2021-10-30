@@ -15,4 +15,4 @@ The used algorithms:
 All these algorithms are implemented and executed using jMetal 4.5 framework. The implementation of the MOEAs can be found following *./JMETALHOME/jmetal/experiments/studies* folders while the problem formulation file can be found in *problems* folder, with the name *LoadTesting.java*.
 Each of these algorithms can be run/executed independently. To record (transactions) and execute the performance tests, we are using Appache JMeter 3.1.
 
-More information about the structure and procedure of this technique is available at: " _link coming soon_ "
+More information about the structure and procedure of this technique is available at: http://urn.kb.se/resolve?urn=urn:nbn:se:mdh:diva-55931
